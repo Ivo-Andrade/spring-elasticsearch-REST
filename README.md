@@ -147,19 +147,19 @@
 - `filter_path`: Redução do objeto de resposta
     - `&filter_path=took,hits.hits._id,hits.hits._score`
     - Exemplo:
-    ```
-    {
-        "took" : 3,
-        "hits" : {
-            "hits" : [
-                {
-                    "_id" : "0",
-                    "_score" : 1.6375021
-                }
-            ]
+        ```
+        {
+            "took" : 3,
+            "hits" : {
+                "hits" : [
+                    {
+                        "_id" : "0",
+                        "_score" : 1.6375021
+                    }
+                ]
+            }
         }
-    }
-    ```
+        ```
     
 # Referências
 - https://www.elastic.co

@@ -23,8 +23,8 @@ import test.elasticsearch_rest.demo.exceptions.*;
 import test.elasticsearch_rest.demo.model.*;
 
 @Component
-@Qualifier("final")
-public class UserDaoElasticImpl extends UserDao {
+@Qualifier("java-final")
+public class UserDaoElasticJavaImpl extends UserDao {
 
     @Autowired
     RestHighLevelClient highLevelClient;
@@ -36,7 +36,7 @@ public class UserDaoElasticImpl extends UserDao {
         try {
             objectJson = new ObjectMapper().writeValueAsString(newInstance);
         } catch (JsonProcessingException e) {
-            throw new UserDaoException("JsonProcessingException while converting newInstance object to Json string: " + e.getMessage());
+            throw new UserDaoInternalException("JsonProcessingException while converting newInstance object to Json string: " + e.getMessage());
         }
 
         IndexRequest request = new IndexRequest("looplex-users", "_doc", newInstance.getUsername())
@@ -45,7 +45,7 @@ public class UserDaoElasticImpl extends UserDao {
         try {
             highLevelClient.index(request, RequestOptions.DEFAULT);
         } catch (IOException e) {
-            throw new UserDaoException("IOException while executing Elasticsearch client: " + e.getMessage());
+            throw new UserDaoInternalException("IOException while executing Elasticsearch client: " + e.getMessage());
         }
 
     }
@@ -62,16 +62,16 @@ public class UserDaoElasticImpl extends UserDao {
         try {
             searchResponse = highLevelClient.search(searchRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
-            throw new UserDaoException("IOException while executing Elasticsearch client: " + e.getMessage());
+            throw new UserDaoInternalException("IOException while executing Elasticsearch client: " + e.getMessage());
         }
 
         for (SearchHit hit : searchResponse.getHits().getHits()) {
             try {
                 results.add(new ObjectMapper().readValue(hit.getSourceAsString(), User.class));
             } catch (JsonMappingException e) {
-                throw new UserDaoException("JsonMappingException while parsing results: " + e.getMessage());
+                throw new UserDaoInternalException("JsonMappingException while parsing results: " + e.getMessage());
             } catch (JsonProcessingException e) {
-                throw new UserDaoException("JsonProcessingException while parsing results: " + e.getMessage());
+                throw new UserDaoInternalException("JsonProcessingException while parsing results: " + e.getMessage());
             }
         }
 
@@ -90,15 +90,15 @@ public class UserDaoElasticImpl extends UserDao {
         try {
             searchResponse = highLevelClient.search(searchRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
-            throw new UserDaoException("IOException while executing Elasticsearch client: " + e.getMessage());
+            throw new UserDaoInternalException("IOException while executing Elasticsearch client: " + e.getMessage());
         }
 
         try {
             return new ObjectMapper().readValue(searchResponse.getHits().getHits()[0].getSourceAsString(), User.class);
         } catch (JsonMappingException e) {
-            throw new UserDaoException("JsonMappingException while parsing results: " + e.getMessage());
+            throw new UserDaoInternalException("JsonMappingException while parsing results: " + e.getMessage());
         } catch (JsonProcessingException e) {
-            throw new UserDaoException("JsonProcessingException while parsing results: " + e.getMessage());
+            throw new UserDaoInternalException("JsonProcessingException while parsing results: " + e.getMessage());
         }
 
     }
@@ -110,7 +110,7 @@ public class UserDaoElasticImpl extends UserDao {
         try {
             objectJson = new ObjectMapper().writeValueAsString(transientObject);
         } catch (JsonProcessingException e) {
-            throw new UserDaoException("JsonProcessingException while converting transientObject object to Json string: " + e.getMessage());
+            throw new UserDaoInternalException("JsonProcessingException while converting transientObject object to Json string: " + e.getMessage());
         }
 
         UpdateRequest updateRequest = new UpdateRequest("looplex-users", "_doc", transientObject.getUsername())
@@ -122,16 +122,16 @@ public class UserDaoElasticImpl extends UserDao {
         try {
             updateResponse = highLevelClient.update(updateRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
-            throw new UserDaoException("IOException while executing Elasticsearch client: " + e.getMessage());
+            throw new UserDaoInternalException("IOException while executing Elasticsearch client: " + e.getMessage());
         }
 
         if (updateResponse.getGetResult().isExists()) {
             try {
                 return new ObjectMapper().readValue(updateResponse.getGetResult().sourceAsString(), User.class);
             } catch (JsonMappingException e) {
-                throw new UserDaoException("JsonMappingException while parsing results: " + e.getMessage());
+                throw new UserDaoInternalException("JsonMappingException while parsing results: " + e.getMessage());
             } catch (JsonProcessingException e) {
-                throw new UserDaoException("JsonProcessingException while parsing results: " + e.getMessage());
+                throw new UserDaoInternalException("JsonProcessingException while parsing results: " + e.getMessage());
             }
         } else throw new UserNotFoundException();
 
@@ -143,7 +143,7 @@ public class UserDaoElasticImpl extends UserDao {
         try {
             highLevelClient.delete(deleteRequest, RequestOptions.DEFAULT);
         } catch (IOException e) {
-            throw new UserDaoException("IOException while executing Elasticsearch client: " + e.getMessage());
+            throw new UserDaoInternalException("IOException while executing Elasticsearch client: " + e.getMessage());
         }
     }
     

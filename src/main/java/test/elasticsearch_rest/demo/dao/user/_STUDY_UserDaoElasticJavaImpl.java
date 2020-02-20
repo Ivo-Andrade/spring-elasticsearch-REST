@@ -22,13 +22,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import test.elasticsearch_rest.demo.exceptions.UserDaoException;
+import test.elasticsearch_rest.demo.exceptions.UserDaoInternalException;
 import test.elasticsearch_rest.demo.exceptions.UserNotFoundException;
 import test.elasticsearch_rest.demo.model.User;
 
 @Component
-@Qualifier("test")
-public class UserDaoElasticTestImpl extends UserDao {
+@Qualifier("java-study")
+public class _STUDY_UserDaoElasticJavaImpl extends UserDao {
 
     @Autowired
     RestHighLevelClient highLevelClient;
@@ -39,7 +39,7 @@ public class UserDaoElasticTestImpl extends UserDao {
             objectJson = new ObjectMapper().writeValueAsString(newInstance);
         } catch (Exception e) {
             // JsonProcessingException
-            throw new UserDaoException("An error occured while searching for an user: " + e.getMessage());
+            throw new UserDaoInternalException("An error occured while searching for an user: " + e.getMessage());
         }
 
         IndexRequest request = new IndexRequest("looplex-users", "_doc", newInstance.getUsername())
@@ -51,15 +51,15 @@ public class UserDaoElasticTestImpl extends UserDao {
             highLevelClient.index(request, RequestOptions.DEFAULT);
             // } catch (ElasticsearchException e) {
             // if (e.status() == RestStatus.CONFLICT) {
-            // throw new UserDaoException("The user with the provided id already exists: " +
+            // throw new UserDaoInternalException("The user with the provided id already exists: " +
             // e.getMessage());
             // } else
-            // throw new UserDaoException("An error occured while creating a new user: " +
+            // throw new UserDaoInternalException("An error occured while creating a new user: " +
             // e.getMessage());
             // }
         } catch (Exception e) {
             // IOException
-            throw new UserDaoException("An error occured while creating a new user: " + e.getMessage());
+            throw new UserDaoInternalException("An error occured while creating a new user: " + e.getMessage());
         }
 
         // From Elasticsearch Java REST Client Documentation
@@ -97,7 +97,7 @@ public class UserDaoElasticTestImpl extends UserDao {
             searchResponse = highLevelClient.search(searchRequest, RequestOptions.DEFAULT);
         } catch (Exception e) {
             // IOException
-            throw new UserDaoException("An error occured while listing all users: " + e.getMessage());
+            throw new UserDaoInternalException("An error occured while listing all users: " + e.getMessage());
         }
 
         // From Elasticsearch Java REST Client Documentation
@@ -115,7 +115,7 @@ public class UserDaoElasticTestImpl extends UserDao {
                 results.add(new ObjectMapper().readValue(hit.getSourceAsString(), User.class));
             } catch (Exception e) {
                 // JsonProcessingException, JsonMappingException
-                throw new UserDaoException("An error occured while listing all users: " + e.getMessage());
+                throw new UserDaoInternalException("An error occured while listing all users: " + e.getMessage());
             }
         }
 
@@ -141,7 +141,7 @@ public class UserDaoElasticTestImpl extends UserDao {
             searchResponse = highLevelClient.search(searchRequest, RequestOptions.DEFAULT);
         } catch (Exception e) {
             // IOException, JsonProcessingException, JsonMappingException
-            throw new UserDaoException("An error occured while searching for an user: " + e.getMessage());
+            throw new UserDaoInternalException("An error occured while searching for an user: " + e.getMessage());
         }
 
         try {
@@ -149,7 +149,7 @@ public class UserDaoElasticTestImpl extends UserDao {
             return new ObjectMapper().readValue(searchResponse.getHits().getHits()[0].getSourceAsString(), User.class);
         } catch (Exception e) {
             // IOException, JsonProcessingException, JsonMappingException
-            throw new UserDaoException("An error occured while searching for an user: " + e.getMessage());
+            throw new UserDaoInternalException("An error occured while searching for an user: " + e.getMessage());
         }
     }
 
@@ -159,7 +159,7 @@ public class UserDaoElasticTestImpl extends UserDao {
             objectJson = new ObjectMapper().writeValueAsString(transientObject);
         } catch (Exception e) {
             // JsonProcessingException
-            throw new UserDaoException("An error occured while updating an user: " + e.getMessage());
+            throw new UserDaoInternalException("An error occured while updating an user: " + e.getMessage());
         }
 
         UpdateRequest updateRequest = new UpdateRequest("looplex-users", "_doc", transientObject.getUsername())
@@ -195,7 +195,7 @@ public class UserDaoElasticTestImpl extends UserDao {
             // }
         } catch (Exception e) {
             // IOException
-            throw new UserDaoException("An error occured while updating an user: " + e.getMessage());
+            throw new UserDaoInternalException("An error occured while updating an user: " + e.getMessage());
         }
 
         // String index = updateResponse.getIndex();
@@ -218,7 +218,7 @@ public class UserDaoElasticTestImpl extends UserDao {
                 return new ObjectMapper().readValue(updateResponse.getGetResult().sourceAsString(), User.class);
             } catch (Exception e) {
                 // JsonProcessingException, JsonMappingException
-                throw new UserDaoException("An error occured while updating an user: " + e.getMessage());
+                throw new UserDaoInternalException("An error occured while updating an user: " + e.getMessage());
             }
         } else
             throw new UserNotFoundException();
@@ -232,7 +232,7 @@ public class UserDaoElasticTestImpl extends UserDao {
             highLevelClient.delete(deleteRequest, RequestOptions.DEFAULT);
         } catch (Exception e) {
             // IOException
-            throw new UserDaoException("An error occured while deleting an user: " + e.getMessage());
+            throw new UserDaoInternalException("An error occured while deleting an user: " + e.getMessage());
         }
     }
     

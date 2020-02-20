@@ -108,6 +108,59 @@
     - `wildcard`
     - `query_string`, `simple_query_string`
     
+## Convenções
+
+### Múltiplos índices
+- `test1,test2,test3`
+- `_all`: Listar todos os índices
+- `test*`, `*test`, `*te*t*`: _Wildcard_ (inclui quaisquer índices que se encaixem a expressão)
+- `-test3`: Exclusão
+- _Query parameters_:
+    - `ignore_unavailable`: Ignora índices não abertos ou existentes
+    - `allow_no_indices`: Permite retornar sem erros caso retorne apenas índices não abertos ou existentes
+    - `expand_wildcards`: Define como as _wildcards_ se comportam quanto a captura de índices
+        - `all`
+        - `open`, `closed`: Índices abertos ou fechados
+        - `none`: _Wildcards_ não são aceitos
+
+### Suporte à Date Math
+- `<static_name{date_math_expr{date_format|time_zone}}>`
+    - `static_name`: Parte estática do nome do índice
+    - `date_math_expr`: Computa a data do índice dinamicamente
+    - `date_format`: Formato de expressão da data (condizente com java-time)
+    - `time_zone`: Por padrão `utc`
+- `<logstash-{now/d{yyyy.MM.dd|+12:00}}>`: logstash-2024.03.23 (Para 22/03/2024)
+- Todos os caracteres especiais devem ser codificado para URL de forma adequada
+    - `# GET /<logstash-{now/d}>/_search`
+      `GET /%3Clogstash-%7Bnow%2Fd%7D%3E/_search`
+
+### Opções padrão
+- `?pretty=true`: JSONs formatados para leitura
+    - Apenas para debug!
+    - `?format=yaml` como alternativa
+- `?human=true`, `?human=false`: Formatação de dados para leitura
+    - `false` por padrão
+- Operandos Date Math (para valores)
+    - `now` ou java-time seguido de `||`
+    - `+`, `-`, `/`
+    - `2001.02.01\|\|+1M/d`: Adiciona um mês à data dada
+- `filter_path`: Redução do objeto de resposta
+    - `&filter_path=took,hits.hits._id,hits.hits._score`
+    - Exemplo:
+    ```
+        {
+    "took" : 3,
+    "hits" : {
+        "hits" : [
+        {
+            "_id" : "0",
+            "_score" : 1.6375021
+        }
+        ]
+    }
+    }
+    ```
+    
 # Referências
 - https://www.elastic.co
 - https://www.elastic.co/guide/en/elasticsearch/reference/current/docs.html (APÌ Implementation)
